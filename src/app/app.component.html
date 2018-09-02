@@ -1,4 +1,11 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div class="col-sm-9" >
-  <div leaflet style="height:100vh;" [leafletOptions]="options" (leafletMapReady)='onMapReady($event)'>
+<div class="row" style="height:100vh;">
+  <div class="col-sm-9" style="height:100vh;">
+    <div leaflet style="height:100vh;" [leafletOptions]="options" (leafletMapReady)='onMapReady($event)'>
+    </div>
   </div>
+
+  <div class="col-sm-3">
+    <h2 style="text-align: center; margin-top: 10px">Selected Areas</h2>
+    <ol style="overflow-y: scroll; height:100vh;"></ol>
+  </div>
+</div>
