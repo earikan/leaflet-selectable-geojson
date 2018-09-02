@@ -15,8 +15,8 @@ export class AppComponent {
   map;
   geoLayerProvince = L.featureGroup();
   featureGroup = L.featureGroup();
-  static selectedList = [];
-
+  selectedList = [];
+  
 
   //leaflet basic options
   options = {
@@ -72,28 +72,30 @@ export class AppComponent {
       layer.setStyle(DEFAULT);
       layer.bindTooltip(layer.feature.properties.name, { direction: 'top', sticky: true });
 
-      layer.on('mouseover', AppComponent.provinceMouseOver(layer, map));
-      layer.on('mouseout', AppComponent.provinceMouseOut(layer));
-      layer.on('click', AppComponent.provinceOnClick(layer, map));
+      layer.on('mouseover', self.provinceMouseOver(layer, map));
+      layer.on('mouseout', self.provinceMouseOut(layer));
+      layer.on('click', self.provinceOnClick(layer, map));
     }
   }
 
 
 
-  static provinceOnClick(layer, map) {
+  provinceOnClick(layer, map) {
+    var self = this;
     return function () {
-      if (!AppComponent.checkExistsLayersProvince(layer.feature)) {
+      if (!self.checkExistsLayersProvince(layer.feature)) {
         layer.setStyle(SELECTED);
-        AppComponent.provinceAddToSelectedList(layer.feature, layer);
+        self.provinceAddToSelectedList(layer.feature, layer);
       }
     }
   }
 
 
 
-  static provinceMouseOver(layer, map) {
+  provinceMouseOver(layer, map) {
+    var self = this;
     return function () {
-      if (AppComponent.checkExistsLayersProvince(layer.feature)) {
+      if (self.checkExistsLayersProvince(layer.feature)) {
         layer.setStyle(SELECTED);
       }
       else
@@ -103,9 +105,10 @@ export class AppComponent {
 
 
 
-  static provinceMouseOut(layer) {
+  provinceMouseOut(layer) {
+    var self = this;
     return function () {
-      if (AppComponent.checkExistsLayersProvince(layer.feature)) {
+      if (self.checkExistsLayersProvince(layer.feature)) {
         layer.setStyle(SELECTED);
       }
       else
@@ -115,7 +118,7 @@ export class AppComponent {
 
 
 
-  static checkExistsLayersProvince(feature) {
+  checkExistsLayersProvince(feature) {
     var result = false
     for (var i = 0; i < this.selectedList.length; i++) {
       if (this.selectedList[i].feature.id == feature.id) {
@@ -128,12 +131,12 @@ export class AppComponent {
 
 
 
-  static provinceAddToSelectedList(feature, layer) {
-    AppComponent.selectedList.push({
+  provinceAddToSelectedList(feature, layer) {
+    this.selectedList.push({
       feature: feature
     })
 
-    var province = AppComponent.selectedList[AppComponent.selectedList.length - 1].feature.properties.name + " ";
+    var province = this.selectedList[this.selectedList.length - 1].feature.properties.name + " ";
     if (province.length) {
       $("ol").append('<li class="highlight"  style="margin-top:20px">' + '<h6 style = "display: inline;">' + province + '</h6>' + '<button type="button" class="delete" style="float: right; margin-right: 20px; border-radius: 12px;  background-color: #FFFFFF" >' + '<i class="material-icons">delete</i>' + '</button>' + '</li>');
     }
@@ -146,7 +149,7 @@ export class AppComponent {
     $("ol").on('click', '.delete', function () {
       var index = $(this).parent().index();
       self.changeDeletedProvinceLayerStyle(index);
-      AppComponent.selectedList.splice(index, 1);
+      self.selectedList.splice(index, 1);
       $(this).parent().remove();
     });
   }
@@ -156,7 +159,7 @@ export class AppComponent {
   changeDeletedProvinceLayerStyle(index) {
     var self = this;
     self.geoLayerProvince.eachLayer(function (layer) {
-      if (layer.feature.id == AppComponent.selectedList[index].feature.id) {
+      if (layer.feature.id == self.selectedList[index].feature.id) {
         layer.setStyle(DEFAULT);
       }
     });
@@ -176,7 +179,7 @@ export class AppComponent {
     $('ol').on('mouseover', 'li.highlight', function () {
       var index = $(this).index();
       self.geoLayerProvince.eachLayer(function (layer) {
-        if (layer.feature.id == AppComponent.selectedList[index].feature.id) {
+        if (layer.feature.id == self.selectedList[index].feature.id) {
           layer.setStyle(HIGHLIGHT);
         }
       });
@@ -189,8 +192,8 @@ export class AppComponent {
     $('ol').on('mouseout', 'li.highlight', function () {
       var index = $(this).index();
       self.geoLayerProvince.eachLayer(function (layer) {
-        if (layer.feature.id == AppComponent.selectedList[index].feature.id) {
-          if (AppComponent.checkExistsLayersProvince(layer.feature)) {
+        if (layer.feature.id == self.selectedList[index].feature.id) {
+          if (self.checkExistsLayersProvince(layer.feature)) {
             layer.setStyle(SELECTED);
           }
           else
