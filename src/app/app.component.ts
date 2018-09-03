@@ -12,13 +12,12 @@ declare var $: any;
 })
 export class AppComponent {
 
-  map;
-  geoLayerProvince = L.featureGroup();
-  featureGroup = L.featureGroup();
-  selectedList = [];
-  
+  private map;
+  private geoLayerAreas = L.featureGroup();
+  private selecteds = [];
 
-  //leaflet basic options
+
+  // leaflet basic options
   options = {
     layers: [
       L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, minZoom: 6, attribution: 'Open Street Map' })
@@ -30,72 +29,80 @@ export class AppComponent {
 
 
 
+  // ngAfterViewInit
   ngAfterViewInit() {
-    this.deleteFromSelectedList();
-    this.highlightAreaFromSelectedList();
+    var self = this;
+    this.deleteFromselecteds(self);
+    this.highlightAreaFromselecteds();
   }
 
 
 
+  // onMapReady
   onMapReady(map: L.Map) {
-    //initilaze map
+    // initilaze map
     this.map = map;
 
-    this.initilazeProvinces("/assets/provinces.json", this.geoLayerProvince, this.map);
-    this.map.addLayer(this.geoLayerProvince);
+    // init areas
+    this.initilazeAreas("/assets/turkey.json", this.geoLayerAreas, this.map);
 
+    // add layer to map
+    this.map.addLayer(this.geoLayerAreas);
   }
 
 
 
-  initilazeProvinces(url: String, layer, map) {
+  // init areas
+  initilazeAreas(url: String, layer, map) {
     var self = this;
-    var geoLayerProvince = L.geoJson();
+    var geoLayerAreas = L.geoJson();
 
+    // get geojson datas and add to geoLayerAreas
     $.getJSON(url, function (json) {
       var geoLayer = L.geoJson(json, {
-        onEachFeature: self.onEachFeatureProvince(map),
+        onEachFeature: self.onEachFeatureArea(map, self),
       });
 
-      geoLayerProvince = geoLayer;
-      geoLayerProvince.eachLayer(function (layer) {
-        layer.addTo(self.geoLayerProvince);
+      geoLayerAreas = geoLayer;
+      geoLayerAreas.eachLayer(function (layer) {
+        layer.addTo(self.geoLayerAreas);
       });
     });
   }
 
 
 
-  onEachFeatureProvince(map) {
-    var self = this;
+  // on each area
+  onEachFeatureArea(map, self) {
     return function (feature, layer) {
       layer.setStyle(DEFAULT);
       layer.bindTooltip(layer.feature.properties.name, { direction: 'top', sticky: true });
 
-      layer.on('mouseover', self.provinceMouseOver(layer, map));
-      layer.on('mouseout', self.provinceMouseOut(layer));
-      layer.on('click', self.provinceOnClick(layer, map));
+      // events
+      layer.on('mouseover', self.areaMouseOver(layer, map, self));
+      layer.on('mouseout', self.areaMouseOut(layer, self));
+      layer.on('click', self.areaOnClick(layer, map, self));
     }
   }
 
 
 
-  provinceOnClick(layer, map) {
-    var self = this;
+  // onClick event
+  areaOnClick(layer, map, self) {
     return function () {
-      if (!self.checkExistsLayersProvince(layer.feature)) {
+      if (!self.checkExistsLayersArea(layer.feature)) {
         layer.setStyle(SELECTED);
-        self.provinceAddToSelectedList(layer.feature, layer);
+        self.areaAddToselecteds(layer.feature, layer);
       }
     }
   }
 
 
 
-  provinceMouseOver(layer, map) {
-    var self = this;
+  // mouseOver event
+  areaMouseOver(layer, map, self) {
     return function () {
-      if (self.checkExistsLayersProvince(layer.feature)) {
+      if (self.checkExistsLayersArea(layer.feature)) {
         layer.setStyle(SELECTED);
       }
       else
@@ -105,10 +112,10 @@ export class AppComponent {
 
 
 
-  provinceMouseOut(layer) {
-    var self = this;
+  // mouseOut event
+  areaMouseOut(layer, self) {
     return function () {
-      if (self.checkExistsLayersProvince(layer.feature)) {
+      if (self.checkExistsLayersArea(layer.feature)) {
         layer.setStyle(SELECTED);
       }
       else
@@ -118,10 +125,11 @@ export class AppComponent {
 
 
 
-  checkExistsLayersProvince(feature) {
+  // check is it selected before
+  checkExistsLayersArea(feature) {
     var result = false
-    for (var i = 0; i < this.selectedList.length; i++) {
-      if (this.selectedList[i].feature.id == feature.id) {
+    for (var i = 0; i < this.selecteds.length; i++) {
+      if (this.selecteds[i].feature.id == feature.id) {
         result = true;
         break;
       }
@@ -131,55 +139,64 @@ export class AppComponent {
 
 
 
-  provinceAddToSelectedList(feature, layer) {
-    this.selectedList.push({
+  // add area to selecteds
+  areaAddToselecteds(feature, layer) {
+    this.selecteds.push({
       feature: feature
     })
 
-    var province = this.selectedList[this.selectedList.length - 1].feature.properties.name + " ";
-    if (province.length) {
-      $("ol").append('<li class="highlight"  style="margin-top:20px">' + '<h6 style = "display: inline;">' + province + '</h6>' + '<button type="button" class="delete" style="float: right; margin-right: 20px; border-radius: 12px;  background-color: #FFFFFF" >' + '<i class="material-icons">delete</i>' + '</button>' + '</li>');
+    var Area = this.selecteds[this.selecteds.length - 1].feature.properties.name + " ";
+    if (Area.length) {
+      $("ol").append('<li class="highlight"  style="margin-top:20px">' + '<h6 style = "display: inline;">' + Area + '</h6>' + '<button type="button" class="delete" style="float: right; margin-right: 20px; border-radius: 12px;  background-color: #FFFFFF" >' + '<i class="material-icons">delete</i>' + '</button>' + '</li>');
     }
   }
 
 
 
-  deleteFromSelectedList() {
-    var self = this;
+  // delete from selected list
+  deleteFromselecteds(self) {
     $("ol").on('click', '.delete', function () {
+
       var index = $(this).parent().index();
-      self.changeDeletedProvinceLayerStyle(index);
-      self.selectedList.splice(index, 1);
+      self.changeDeletedAreaLayerStyle(index, self);
+
+      self.selecteds.splice(index, 1);
       $(this).parent().remove();
     });
   }
 
 
 
-  changeDeletedProvinceLayerStyle(index) {
-    var self = this;
-    self.geoLayerProvince.eachLayer(function (layer) {
-      if (layer.feature.id == self.selectedList[index].feature.id) {
+  // change deleted layer style
+  changeDeletedAreaLayerStyle(index, self) {
+    self.geoLayerAreas.eachLayer(function (layer) {
+      if (layer.feature.id == self.selecteds[index].feature.id) {
         layer.setStyle(DEFAULT);
       }
     });
   }
 
 
-  highlightAreaFromSelectedList() {
+
+  // highlight area item from selected list mouseover
+  highlightAreaFromselecteds() {
     $('ol').css('cursor', 'pointer');
-    this.highlightAreaFromSelectedListMouseOver();
-    this.highlightAreaFromSelectedListMouseOut();
+    this.highlightAreaFromselectedsMouseOver();
+    this.unhighlightAreaFromselectedsMouseOut();
   }
 
 
 
-  highlightAreaFromSelectedListMouseOver() {
+  // highligh area
+  highlightAreaFromselectedsMouseOver() {
     var self = this;
     $('ol').on('mouseover', 'li.highlight', function () {
+      // get index
       var index = $(this).index();
-      self.geoLayerProvince.eachLayer(function (layer) {
-        if (layer.feature.id == self.selectedList[index].feature.id) {
+
+      // highlight area
+      self.geoLayerAreas.eachLayer(function (layer) {
+        if (layer.feature.id == self.selecteds[index].feature.id) {
           layer.setStyle(HIGHLIGHT);
         }
       });
@@ -187,22 +204,25 @@ export class AppComponent {
   }
 
 
-  highlightAreaFromSelectedListMouseOut() {
+
+  // unhighlight area
+  unhighlightAreaFromselectedsMouseOut() {
     var self = this;
     $('ol').on('mouseout', 'li.highlight', function () {
+      // get index
       var index = $(this).index();
-      self.geoLayerProvince.eachLayer(function (layer) {
-        if (layer.feature.id == self.selectedList[index].feature.id) {
-          if (self.checkExistsLayersProvince(layer.feature)) {
+
+      // unhighlight area
+      self.geoLayerAreas.eachLayer(function (layer) {
+        if (layer.feature.id == self.selecteds[index].feature.id) {
+          if (self.checkExistsLayersArea(layer.feature)) {
             layer.setStyle(SELECTED);
           }
           else
-            layer.setStyle(HIGHLIGHT);
+            layer.setStyle(DEFAULT);
         }
       });
-
     });
-
   }
 
 }
