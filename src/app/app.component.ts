@@ -165,7 +165,7 @@ export class AppComponent {
     })
 
     var area = this.selecteds[this.selecteds.length - 1].feature.properties.name + " ";
-
+    
     if (area.length) {
       $("ol").append('<li class="highlight"  style="margin-top:20px">' + '<h6 style = "display: inline;">' + area + '</h6>' + '<button type="button" class="delete" style="float: right; margin-right: 20px; border-radius: 12px;  background-color: #FFFFFF" >' + '<i class="material-icons">delete</i>' + '</button>' + '</li>');
     }
@@ -178,7 +178,7 @@ export class AppComponent {
     $("ol").on('click', '.delete', function () {
 
       var index = $(this).parent().index();
-      self.changeDeletedAreaLayerStyle(index, self);
+      self.changeAreaLayerStyle(index, self, DEFAULT);
 
       self.selecteds.splice(index, 1);
       $(this).parent().remove();
@@ -188,10 +188,10 @@ export class AppComponent {
 
 
   // change deleted layer style
-  changeDeletedAreaLayerStyle(index, self) {
+  changeAreaLayerStyle(index, self, style) {
     self.geoLayerAreas.eachLayer(function (layer) {
       if (layer.feature.id == self.selecteds[index].feature.id) {
-        layer.setStyle(DEFAULT);
+        layer.setStyle(style);
       }
     });
   }
@@ -215,11 +215,7 @@ export class AppComponent {
       var index = $(this).index();
 
       // highlight area
-      self.geoLayerAreas.eachLayer(function (layer) {
-        if (layer.feature.id == self.selecteds[index].feature.id) {
-          layer.setStyle(HIGHLIGHT);
-        }
-      });
+      self.changeAreaLayerStyle(index, self, HIGHLIGHT);
     })
   }
 
@@ -252,7 +248,7 @@ export class AppComponent {
     var self = this;
 
     for (var i = 0; i < this.selecteds.length; ++i) {
-      self.changeDeletedAreaLayerStyle(i, self);
+      self.changeAreaLayerStyle(i, self, DEFAULT);
       $('ol').empty();
     }
 
