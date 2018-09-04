@@ -94,7 +94,26 @@ export class AppComponent {
         layer.setStyle(SELECTED);
         self.areaAddToselecteds(layer.feature, layer);
       }
+      else {
+        self.removeOnClick(self, layer);
+      }
     }
+  }
+
+
+
+  // remove on click
+  removeOnClick(self, layer) {
+    for (var i = 0; i < self.selecteds.length; i++) {
+      if (self.selecteds[i].feature.id == layer.feature.id) {
+        // set style
+        layer.setStyle(HIGHLIGHT);
+        // remove from jquery list
+        $('ol li').eq(i).remove();
+        // remove from selecteds
+        self.selecteds.splice(i, 1);
+      }
+    };
   }
 
 
@@ -146,6 +165,7 @@ export class AppComponent {
     })
 
     var area = this.selecteds[this.selecteds.length - 1].feature.properties.name + " ";
+
     if (area.length) {
       $("ol").append('<li class="highlight"  style="margin-top:20px">' + '<h6 style = "display: inline;">' + area + '</h6>' + '<button type="button" class="delete" style="float: right; margin-right: 20px; border-radius: 12px;  background-color: #FFFFFF" >' + '<i class="material-icons">delete</i>' + '</button>' + '</li>');
     }
@@ -223,6 +243,20 @@ export class AppComponent {
         }
       });
     });
+  }
+
+
+
+  // delete all selecteds
+  deleteAll() {
+    var self = this;
+
+    for (var i = 0; i < this.selecteds.length; ++i) {
+      self.changeDeletedAreaLayerStyle(i, self);
+      $('ol').empty();
+    }
+
+    self.selecteds.length = 0;
   }
 
 }

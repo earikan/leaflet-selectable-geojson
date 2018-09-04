@@ -1,12 +1,24 @@
-<div class="row" style="height:100vh;">
-  <div class="col-sm-9" style="height:100vh;">
-    <div leaflet style="height:100vh;" [leafletOptions]="options" (leafletMapReady)='onMapReady($event)'>
+<nav class="navbar navbar-dark bg-dark mb-5">
+  <a class="navbar-brand" href="/">Leaflet - Angular</a>
+  <div class="navbar-expand mr-auto">
+  </div>
+</nav>
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-9">
+      <div leaflet style="height:500px;" [leafletOptions]="options" (leafletMapReady)='onMapReady($event)'>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <h2 style="margin-top: 10px">Selected Areas</h2>
+      <h6>Click polygons!</h6>
+      <ol style="overflow-y: scroll; max-height: 400px;">
+      </ol>
     </div>
   </div>
-  <div class="col-sm-3">
-    <h2 style="margin-top: 10px">Selected Areas</h2>
-    <h6>Click polygons!</h6>
-    <ol style="overflow-y: scroll; height:100vh;">
-    </ol>
+  <div class="row" style="margin-top: 10px; margin-bottom: 20px">
+    <div class="col-sm-9">
+      <button (click)="deleteAll()" style="float: right">Delete All</button>
+    </div>
   </div>
-</div>
