@@ -44,7 +44,7 @@ export class AppComponent {
     this.map = map;
 
     // init areas
-    this.initilazeAreas("/assets/turkey.json", this.geoLayerAreas, this.map);
+    this.initilazeAreas("assets/turkey.json", this.geoLayerAreas, this.map);
 
     // add layer to map
     this.map.addLayer(this.geoLayerAreas);
