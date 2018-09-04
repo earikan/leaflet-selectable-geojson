@@ -23,7 +23,7 @@ export class AppComponent {
       L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, minZoom: 6, attribution: 'Open Street Map' })
     ],
     zoom: 6,
-    center: L.latLng({ lat: 38.961228, lng: 35.435546 }),
+    center: L.latLng({ lat: 38.9612, lng: 35.4355 }),
     maxBounds: [[36, 26], [42, 45]],
   };
 
@@ -145,9 +145,9 @@ export class AppComponent {
       feature: feature
     })
 
-    var Area = this.selecteds[this.selecteds.length - 1].feature.properties.name + " ";
-    if (Area.length) {
-      $("ol").append('<li class="highlight"  style="margin-top:20px">' + '<h6 style = "display: inline;">' + Area + '</h6>' + '<button type="button" class="delete" style="float: right; margin-right: 20px; border-radius: 12px;  background-color: #FFFFFF" >' + '<i class="material-icons">delete</i>' + '</button>' + '</li>');
+    var area = this.selecteds[this.selecteds.length - 1].feature.properties.name + " ";
+    if (area.length) {
+      $("ol").append('<li class="highlight"  style="margin-top:20px">' + '<h6 style = "display: inline;">' + area + '</h6>' + '<button type="button" class="delete" style="float: right; margin-right: 20px; border-radius: 12px;  background-color: #FFFFFF" >' + '<i class="material-icons">delete</i>' + '</button>' + '</li>');
     }
   }
 
@@ -181,14 +181,14 @@ export class AppComponent {
   // highlight area item from selected list mouseover
   highlightAreaFromselecteds() {
     $('ol').css('cursor', 'pointer');
-    this.highlightAreaFromselectedsMouseOver();
-    this.unhighlightAreaFromselectedsMouseOut();
+    this.highlightAreaFromSelectedsMouseOver();
+    this.unhighlightAreaFromSelectedsMouseOut();
   }
 
 
 
   // highligh area
-  highlightAreaFromselectedsMouseOver() {
+  highlightAreaFromSelectedsMouseOver() {
     var self = this;
     $('ol').on('mouseover', 'li.highlight', function () {
       // get index
@@ -206,7 +206,7 @@ export class AppComponent {
 
 
   // unhighlight area
-  unhighlightAreaFromselectedsMouseOut() {
+  unhighlightAreaFromSelectedsMouseOut() {
     var self = this;
     $('ol').on('mouseout', 'li.highlight', function () {
       // get index
